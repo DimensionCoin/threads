@@ -31,8 +31,8 @@ export const sidebarLinks = [
   },
   {
     imgURL: "/assets/news.svg",
-    route: "/news",
-    label: "Explore",
+    route: "/articles",
+    label: "Articles",
   },
 ];
 

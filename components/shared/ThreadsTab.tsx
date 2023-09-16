@@ -51,9 +51,13 @@ async function ThreadsTab({ currentUserId, accountId, accountType }: Props) {
     redirect("/");
   }
 
+  const sortedThreads = result.threads.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+
   return (
-    <section className='mt-9 flex flex-col gap-10'>
-      {result.threads.map((thread) => (
+    <section className="mt-9 flex flex-col gap-10">
+      {sortedThreads.map((thread) => (
         <ThreadCard
           key={thread._id}
           id={thread._id}

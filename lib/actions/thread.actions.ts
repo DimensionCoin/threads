@@ -101,6 +101,33 @@ async function fetchAllChildThreads(threadId: string): Promise<any[]> {
   return descendantThreads;
 }
 
+export async function likeThread(threadId: string, userId: string) {
+  connectToDB();
+
+  const thread = await Thread.findById(threadId);
+
+  if (!thread) {
+    throw new Error("Thread not found");
+  }
+
+  // Check if the user has already liked the thread
+  if (thread.likedBy.includes(userId)) {
+    // Unlike the thread
+    thread.likes -= 1;
+    const index = thread.likedBy.indexOf(userId);
+    if (index > -1) {
+      thread.likedBy.splice(index, 1);
+    }
+  } else {
+    // Like the thread
+    thread.likes += 1;
+    thread.likedBy.push(userId);
+  }
+
+  await thread.save();
+  return thread;
+}
+
 export async function deleteThread(id: string, path: string): Promise<void> {
   try {
     connectToDB();

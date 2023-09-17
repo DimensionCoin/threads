@@ -25,7 +25,7 @@ async function Page({ params }: { params: { id: string } }) {
   const isViewingOwnProfile = user.id === userInfo.id;
   const filteredProfileTabs = isViewingOwnProfile
     ? profileTabs
-    : profileTabs.filter((tab) => tab.label !== "Replies");
+    : profileTabs.filter((tab) => tab.label !== "Activity");
 
   const loggedInUserInfo = await fetchUser(user.id, true);
   const loggedInUserFriends =

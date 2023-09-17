@@ -27,12 +27,13 @@ async function Page({ params }: { params: { id: string } }) {
     ? profileTabs
     : profileTabs.filter((tab) => tab.label !== "Replies");
 
-    const loggedInUserInfo = await fetchUser(user.id, true);
-    const loggedInUserFriends = loggedInUserInfo.friends.map(
-      (friend: { id: any; }) => friend.id
-    );
+  const loggedInUserInfo = await fetchUser(user.id, true);
+  const loggedInUserFriends =
+    loggedInUserInfo && loggedInUserInfo.friends
+      ? loggedInUserInfo.friends.map((friend: { id: any }) => friend.id)
+      : [];
 
-console.log(userInfo.friends);
+  console.log(userInfo.friends);
 
   return (
     <section>

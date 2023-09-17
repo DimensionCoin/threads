@@ -1,7 +1,6 @@
 "use client";
 import { removeFriend } from "@/lib/actions/user.actions";
 import Image from "next/image";
-import { useRouter } from "next/router"; // Corrected the import path for useRouter
 
 interface Props {
   accountId: string;
@@ -22,7 +21,6 @@ function FriendCard({
   authUserId,
   type,
 }: Props) {
-  const router = useRouter();
 
   const handleRemoveFriend = async () => {
     try {
@@ -35,11 +33,7 @@ function FriendCard({
     }
   };
 
-  const navigateToProfile = () => {
-    if (router) {
-      router.push(`/profile/${id}`);
-    }
-  };
+  
 
   return (
     <article

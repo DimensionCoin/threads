@@ -12,23 +12,30 @@ interface Props {
 const AddUserButton: React.FC<Props> = ({ accountId, authUserId }) => {
   
     const handleAddFriend = async () => {
-    try {
-      const result = await addFriend(authUserId, accountId);
-      if (result.message) {
-        alert(result.message);
+      try {
+        const result = await addFriend(authUserId, accountId);
+        if (result.message) {
+          
+          window.location.reload(); // Reload the page
+        }
+      } catch (error) {
+        console.error("Error adding friend:", error);
       }
-    } catch (error) {
-      console.error("Error adding friend:", error);
-    }
-  };
+    };
 
   return (
     <Button
       onClick={handleAddFriend}
-      className="flex cursor-pointer gap-3 rounded-lg bg-[#404040] px-4 py-2"
+      className="flex cursor-pointer gap-3 bg-[#D82CFB] px-4 py-2 rounded-full hover:bg-[#d82cfbda]"
     >
-      <Image src="/assets/user.svg" alt="add user" width={16} height={16} />
-      <p className="text-light-2 max-sm:hidden">Add User</p>
+      <Image
+        src="/assets/adduser.svg"
+        alt="add user"
+        width={30}
+        height={30}
+        className=""
+      />
+      <p className="max-sm:hidden text-black">Add User</p>
     </Button>
   );
 };

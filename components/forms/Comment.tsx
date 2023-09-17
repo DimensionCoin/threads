@@ -76,7 +76,7 @@ function Comment({ threadId, currentUserImg, currentUserId }: Props) {
           )}
         />
 
-        <Button type='submit' className='comment-form_btn'>
+        <Button type='submit' className='comment-form_btn bg-[#ce51ce]'>
           Reply
         </Button>
       </form>

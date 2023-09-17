@@ -9,24 +9,32 @@ import User from "../models/user.model";
 
 import { connectToDB } from "../mongoose";
 
-export async function fetchUser(userId: string) {
+export async function fetchUser(
+  userId: string,
+  populateFriends: boolean = false
+) {
   try {
     connectToDB();
 
-    return await User.findOne({ id: userId })
-      .populate({
-        path: "communities",
-        model: Community,
-      })
-      .populate({
+    let query = User.findOne({ id: userId }).populate({
+      path: "communities",
+      model: Community,
+    });
+
+    if (populateFriends) {
+      query = query.populate({
         path: "friends",
         model: User,
-        select: "username name image", 
+        select: "id", 
       });
+    }
+
+    return await query.exec();
   } catch (error: any) {
     throw new Error(`Failed to fetch user: ${error.message}`);
   }
 }
+
 
 
 interface Params {

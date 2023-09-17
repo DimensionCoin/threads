@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import AddUserButton from "../buttons/AddUserButton";
+import UnfollowButton from "../buttons/UnfollowButton";
 
 interface Props {
   accountId: string;
@@ -10,6 +11,7 @@ interface Props {
   imgUrl: string;
   bio: string;
   type?: string;
+  friends: Array<string>;
 }
 
 function ProfileHeader({
@@ -20,30 +22,10 @@ function ProfileHeader({
   imgUrl,
   bio,
   type,
+  friends,
 }: Props) {
 
-  const handleAddFriend = async () => {
-    try {
-      const response = await fetch("/api/addFriend", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          currentUserId: authUserId,
-          friendId: accountId,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.message) {
-        alert(data.message);
-      }
-    } catch (error) {
-      console.error("Error adding friend:", error);
-    }
-  };
+  const isFriend = friends.includes(accountId);
 
   return (
     <div className="flex w-full flex-col justify-start">
@@ -79,9 +61,13 @@ function ProfileHeader({
             </div>
           </Link>
         )}
-        {accountId !== authUserId && type !== "Community" && (
-          <AddUserButton accountId={accountId} authUserId={authUserId} />
-        )}
+        {accountId !== authUserId &&
+          type !== "Community" &&
+          (isFriend ? (
+            <UnfollowButton accountId={accountId} authUserId={authUserId} />
+          ) : (
+            <AddUserButton accountId={accountId} authUserId={authUserId} />
+          ))}
       </div>
 
       <p className="mt-6 max-w-lg text-base-regular text-light-2">{bio}</p>

@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchUser, getActivity } from "@/lib/actions/user.actions";
 import Link from "next/link";
 import FriendCard from "@/components/cards/FriendCard";
-import { Key } from "react";
+import UserCard from "@/components/cards/UserCard";
 
 async function Page({ params }: { params: { id: string } }) {
   const user = await currentUser();
@@ -22,6 +22,18 @@ async function Page({ params }: { params: { id: string } }) {
 
   const activity = await getActivity(userInfo._id);
 
+  const isViewingOwnProfile = user.id === userInfo.id;
+  const filteredProfileTabs = isViewingOwnProfile
+    ? profileTabs
+    : profileTabs.filter((tab) => tab.label !== "Replies");
+
+    const loggedInUserInfo = await fetchUser(user.id, true);
+    const loggedInUserFriends = loggedInUserInfo.friends.map(
+      (friend: { id: any; }) => friend.id
+    );
+
+
+
   return (
     <section>
       <ProfileHeader
@@ -31,12 +43,13 @@ async function Page({ params }: { params: { id: string } }) {
         username={userInfo.username}
         imgUrl={userInfo.image}
         bio={userInfo.bio}
+        friends={loggedInUserFriends}
       />
 
       <div className="mt-9">
-        <Tabs defaultValue="threads" className="w-full">
+        <Tabs defaultValue="posts" className="w-full">
           <TabsList className="tab">
-            {profileTabs.map((tab) => (
+            {filteredProfileTabs.map((tab) => (
               <TabsTrigger key={tab.label} value={tab.value} className="tab">
                 <Image
                   src={tab.icon}
@@ -48,20 +61,27 @@ async function Page({ params }: { params: { id: string } }) {
                 <p className="max-sm:hidden">{tab.label}</p>
 
                 {tab.label === "Posts" && (
-                  <p className="ml-1 rounded-sm bg-light-4 px-2 py-1 !text-tiny-medium text-light-2">
+                  <p className="ml-1 rounded-sm bg-[#49ECAD] px-2 py-1 !text-tiny-medium text-black ">
                     {userInfo.threads.length}
+                  </p>
+                )}
+
+                {tab.label === "Friends" && (
+                  <p className="ml-1 rounded-sm bg-[#49ECAD] px-2 py-1 !text-tiny-medium text-black">
+                    {userInfo.friends.length}
                   </p>
                 )}
               </TabsTrigger>
             ))}
           </TabsList>
-          {profileTabs.map((tab) => (
+
+          {filteredProfileTabs.map((tab) => (
             <TabsContent
               key={`content-${tab.label}`}
               value={tab.value}
               className="w-full text-light-1"
             >
-              {tab.label === "Replies" ? (
+              {tab.label === "Replies" && isViewingOwnProfile ? (
                 activity.length > 0 ? (
                   activity.map((activityItem) => (
                     <Link
@@ -76,6 +96,7 @@ async function Page({ params }: { params: { id: string } }) {
                           height={20}
                           className="rounded-full object-cover"
                         />
+                        <p className="ml-1 rounded-sm bg-light-4 px-2 py-1 !text-tiny-medium text-light-2"></p>
                         <p className="!text-small-regular text-light-1">
                           <span className="mr-1 text-[#D82CFB]">
                             {activityItem.author.name}
@@ -100,14 +121,13 @@ async function Page({ params }: { params: { id: string } }) {
                       image: string;
                     }) => (
                       <div className="mt-10">
-                        <FriendCard
+                        <UserCard
                           key={friend.id}
                           id={friend.id}
                           name={friend.name}
                           username={friend.username}
                           imgUrl={friend.image}
-                          accountId={""}
-                          authUserId={""}
+                          personType={""}
                         />
                       </div>
                     )

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import AddUserButton from "../buttons/AddUserButton";
 
 interface Props {
   accountId: string;
@@ -20,6 +21,30 @@ function ProfileHeader({
   bio,
   type,
 }: Props) {
+
+  const handleAddFriend = async () => {
+    try {
+      const response = await fetch("/api/addFriend", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          currentUserId: authUserId,
+          friendId: accountId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.message) {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error("Error adding friend:", error);
+    }
+  };
+
   return (
     <div className="flex w-full flex-col justify-start">
       <div className="flex items-center justify-between">
@@ -53,6 +78,9 @@ function ProfileHeader({
               <p className="text-light-2 max-sm:hidden">Edit</p>
             </div>
           </Link>
+        )}
+        {accountId !== authUserId && type !== "Community" && (
+          <AddUserButton accountId={accountId} authUserId={authUserId} />
         )}
       </div>
 

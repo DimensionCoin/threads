@@ -10,6 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { fetchUser, getActivity } from "@/lib/actions/user.actions";
 import Link from "next/link";
+import FriendCard from "@/components/cards/FriendCard";
+import { Key } from "react";
 
 async function Page({ params }: { params: { id: string } }) {
   const user = await currentUser();
@@ -88,6 +90,33 @@ async function Page({ params }: { params: { id: string } }) {
                     No activity yet
                   </p>
                 )
+              ) : tab.label === "Friends" ? (
+                userInfo.friends && userInfo.friends.length > 0 ? (
+                  userInfo.friends.map(
+                    (friend: {
+                      id: string;
+                      name: string;
+                      username: string;
+                      image: string;
+                    }) => (
+                      <div className="mt-10">
+                        <FriendCard
+                          key={friend.id}
+                          id={friend.id}
+                          name={friend.name}
+                          username={friend.username}
+                          imgUrl={friend.image}
+                          accountId={""}
+                          authUserId={""}
+                        />
+                      </div>
+                    )
+                  )
+                ) : (
+                  <p className="!text-base-regular text-light-3">
+                    No friends yet
+                  </p>
+                )
               ) : (
                 <ThreadsTab
                   currentUserId={user.id}
@@ -102,4 +131,5 @@ async function Page({ params }: { params: { id: string } }) {
     </section>
   );
 }
+
 export default Page;

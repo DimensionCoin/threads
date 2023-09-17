@@ -13,14 +13,21 @@ export async function fetchUser(userId: string) {
   try {
     connectToDB();
 
-    return await User.findOne({ id: userId }).populate({
-      path: "communities",
-      model: Community,
-    });
+    return await User.findOne({ id: userId })
+      .populate({
+        path: "communities",
+        model: Community,
+      })
+      .populate({
+        path: "friends",
+        model: User,
+        select: "username name image", 
+      });
   } catch (error: any) {
     throw new Error(`Failed to fetch user: ${error.message}`);
   }
 }
+
 
 interface Params {
   userId: string;
@@ -152,6 +159,57 @@ export async function fetchUsers({
     throw error;
   }
 }
+
+export async function addFriend(currentUserId: string, friendId: string) {
+  try {
+    connectToDB();
+
+    // Fetch the MongoDB _id for both users
+    const currentUser = await User.findOne({ id: currentUserId });
+    const friendUser = await User.findOne({ id: friendId });
+
+    if (!currentUser || !friendUser) {
+      throw new Error("User not found");
+    }
+
+    // Add friendUser's _id to current user's friends list
+    await User.updateOne(
+      { _id: currentUser._id },
+      { $addToSet: { friends: friendUser._id } }
+    );
+
+    return { message: "Friend added successfully!" };
+  } catch (error) {
+    console.error("Error adding friend:", error);
+    throw error;
+  }
+}
+
+export async function removeFriend(currentUserId: string, friendId: string) {
+  try {
+    connectToDB();
+
+    // Fetch the MongoDB _id for both users
+    const currentUser = await User.findOne({ id: currentUserId });
+    const friendUser = await User.findOne({ id: friendId });
+
+    if (!currentUser || !friendUser) {
+      throw new Error("User not found");
+    }
+
+    // Remove friendUser's _id from current user's friends list
+    await User.updateOne(
+      { _id: currentUser._id },
+      { $pull: { friends: friendUser._id } }
+    );
+
+    return { message: "Friend removed successfully!" };
+  } catch (error) {
+    console.error("Error removing friend:", error);
+    throw error;
+  }
+}
+
 
 export async function getActivity(userId: string) {
   try {

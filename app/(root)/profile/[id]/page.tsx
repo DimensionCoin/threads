@@ -82,7 +82,7 @@ async function Page({ params }: { params: { id: string } }) {
               value={tab.value}
               className="w-full text-light-1"
             >
-              {tab.label === "Replies" && isViewingOwnProfile ? (
+              {tab.label === "Activity" && isViewingOwnProfile ? (
                 activity.length > 0 ? (
                   activity.map((activityItem) => (
                     <Link

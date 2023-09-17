@@ -21,8 +21,8 @@ async function page({ params }: { params: { id: string } }) {
   const thread = await fetchThreadById(params.id);
 
   return (
-    <section className="relative">
-      <div>
+    <section className="flex flex-col h-screen">
+      <div className="overflow-y-auto flex-grow">
         <ThreadCard
           id={thread._id}
           currentUserId={user.id}
@@ -33,31 +33,31 @@ async function page({ params }: { params: { id: string } }) {
           createdAt={thread.createdAt}
           comments={thread.children}
         />
-      </div>
 
-      <div className="mt-8 mb-3">
-        <Comment
-          threadId={params.id}
-          currentUserImg={user.imageUrl}
-          currentUserId={JSON.stringify(userInfo._id)}
-        />
-      </div>
-
-      <div className="mt-10 mb-3">
-        {thread.children.map((childItem: any) => (
-          <ThreadCard
-            key={childItem._id}
-            id={childItem._id}
-            currentUserId={user.id}
-            parentId={childItem.parentId}
-            content={childItem.text}
-            author={childItem.author}
-            community={childItem.community}
-            createdAt={childItem.createdAt}
-            comments={childItem.children}
-            isComment
+        <div className="mt-1">
+          <Comment
+            threadId={params.id}
+            currentUserImg={user.imageUrl}
+            currentUserId={JSON.stringify(userInfo._id)}
           />
-        ))}
+        </div>
+
+        <div className="mt-10">
+          {thread.children.map((childItem: any) => (
+            <ThreadCard
+              key={childItem._id}
+              id={childItem._id}
+              currentUserId={user.id}
+              parentId={childItem.parentId}
+              content={childItem.text}
+              author={childItem.author}
+              community={childItem.community}
+              createdAt={childItem.createdAt}
+              comments={childItem.children}
+              isComment
+            />
+          ))}
+        </div>
       </div>
     </section>
   );

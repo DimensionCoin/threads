@@ -12,7 +12,7 @@ export const sidebarLinks = [
   {
     imgURL: "/assets/heart.svg",
     route: "/activity",
-    label: "Activity",
+    label: "Explore",
   },
   {
     imgURL: "/assets/create.svg",
@@ -37,13 +37,12 @@ export const sidebarLinks = [
 ];
 
 export const profileTabs = [
-  { value: "posts", label: "Posts", icon: "/assets/reply.svg" },
-  { value: "replies", label: "Replies", icon: "/assets/members.svg" },
+  { value: "posts", label: "Posts", icon: "/assets/profile.svg" },
+  { value: "activity", label: "Activity", icon: "/assets/heart-gray.svg" },
   { value: "friends", label: "Friends", icon: "/assets/members.svg" },
 ];
 
 export const communityTabs = [
   { value: "threads", label: "Posts", icon: "/assets/reply.svg" },
   { value: "members", label: "Members", icon: "/assets/members.svg" },
-  { value: "requests", label: "Requests", icon: "/assets/request.svg" },
 ];

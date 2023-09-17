@@ -17,6 +17,10 @@ function Bottombar() {
             (pathname.includes(link.route) && link.route.length > 1) ||
             pathname === link.route;
 
+          const isCreatePost =
+            link.route === "create-post" || link.label === "Create Post";
+          const iconSize = isCreatePost ? 42 : 18;
+
           return (
             <Link
               href={link.route}
@@ -26,8 +30,8 @@ function Bottombar() {
               <Image
                 src={link.imgURL}
                 alt={link.label}
-                width={16}
-                height={16}
+                width={iconSize}
+                height={iconSize}
                 className="object-contain"
               />
 

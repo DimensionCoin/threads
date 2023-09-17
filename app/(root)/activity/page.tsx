@@ -1,52 +1,61 @@
-import Image from "next/image";
-import Link from "next/link";
 import { currentUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
-import { fetchUser, getActivity } from "@/lib/actions/user.actions";
+import ThreadCard from "@/components/cards/ThreadCard";
+import Pagination from "@/components/shared/Pagination";
 
-async function Page() {
+import { fetchPosts } from "@/lib/actions/thread.actions";
+import { fetchUser } from "@/lib/actions/user.actions";
+
+async function Home({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | undefined };
+}) {
   const user = await currentUser();
   if (!user) return null;
 
   const userInfo = await fetchUser(user.id);
   if (!userInfo?.onboarded) redirect("/onboarding");
 
-  const activity = await getActivity(userInfo._id);
+  const result = await fetchPosts(
+    searchParams.page ? +searchParams.page : 1,
+    30
+  );
 
   return (
     <>
-      <h1 className="head-text">Activity</h1>
+      <h1 className="head-text text-left">Explore</h1>
 
-      <section className="mt-10 flex flex-col gap-5">
-        {activity.length > 0 ? (
+      <section className="mt-9 flex flex-col gap-10">
+        {result.posts.length === 0 ? (
+          <p className="no-result">No threads found</p>
+        ) : (
           <>
-            {activity.map((activity) => (
-              <Link key={activity._id} href={`/thread/${activity.parentId}`}>
-                <article className="activity-card">
-                  <Image
-                    src={activity.author.image}
-                    alt="user_logo"
-                    width={20}
-                    height={20}
-                    className="rounded-full object-cover"
-                  />
-                  <p className="!text-small-regular text-light-1">
-                    <span className="mr-1 text-[#D82CFB]">
-                      {activity.author.name}
-                    </span>{" "}
-                    replied to your thread
-                  </p>
-                </article>
-              </Link>
+            {result.posts.map((post) => (
+              <ThreadCard
+                key={post._id}
+                id={post._id}
+                currentUserId={user.id}
+                parentId={post.parentId}
+                content={post.text}
+                author={post.author}
+                community={post.community}
+                createdAt={post.createdAt}
+                comments={post.children}
+              />
             ))}
           </>
-        ) : (
-          <p className="!text-base-regular text-light-3">No activity yet</p>
         )}
       </section>
+
+      <Pagination
+        path="/"
+        pageNumber={searchParams?.page ? +searchParams.page : 1}
+        isNext={result.isNext}
+      />
     </>
   );
 }
 
-export default Page;
+export default Home;

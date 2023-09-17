@@ -1,52 +1,35 @@
 "use client";
-import { removeFriend } from "@/lib/actions/user.actions";
+
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+
+import { Button } from "../ui/button";
 
 interface Props {
-  accountId: string;
-  authUserId: string;
+  id: string;
   name: string;
   username: string;
   imgUrl: string;
-  type?: string;
-  id: string;
+  personType: string;
 }
 
-function FriendCard({
-  id,
-  name,
-  username,
-  imgUrl,
-  accountId,
-  authUserId,
-  type,
-}: Props) {
+function FriendCard({ id, name, username, imgUrl, personType }: Props) {
+  const router = useRouter();
 
-  const handleRemoveFriend = async () => {
-    try {
-      const result = await removeFriend(authUserId, id);
-      if (result.message) {
-        alert(result.message);
-      }
-    } catch (error) {
-      console.error("Error removing friend:", error);
-    }
-  };
+  const isCommunity = personType === "Community";
 
-  
+  console.log("Name:", name);
+  console.log("Username:", username);
+
 
   return (
-    <article
-      className="user-card"
-      
-      style={{ cursor: "pointer" }}
-    >
+    <article className="user-card">
       <div className="user-card_avatar">
         <div className="relative h-12 w-12">
           <Image
             src={imgUrl}
             alt="user_logo"
-            layout="fill"
+            fill
             className="rounded-full object-cover"
           />
         </div>
@@ -56,6 +39,19 @@ function FriendCard({
           <p className="text-small-medium text-gray-1">@{username}</p>
         </div>
       </div>
+
+      <Button
+        className="bg-[#49ECAD]"
+        onClick={() => {
+          if (isCommunity) {
+            router.push(`/communities/${id}`);
+          } else {
+            router.push(`/profile/${id}`);
+          }
+        }}
+      >
+        View
+      </Button>
     </article>
   );
 }

@@ -21,13 +21,14 @@ export async function fetchUser(
       model: Community,
     });
 
-    if (populateFriends) {
-      query = query.populate({
-        path: "friends",
-        model: User,
-        select: "id", 
-      });
-    }
+   if (populateFriends) {
+     query = query.populate({
+       path: "friends",
+       model: User,
+       select: "id name username image",
+     });
+   }
+
 
     return await query.exec();
   } catch (error: any) {

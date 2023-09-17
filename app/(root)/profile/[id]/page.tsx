@@ -17,7 +17,7 @@ async function Page({ params }: { params: { id: string } }) {
   const user = await currentUser();
   if (!user) return null;
 
-  const userInfo = await fetchUser(params.id);
+  const userInfo = await fetchUser(params.id, true);
   if (!userInfo?.onboarded) redirect("/onboarding");
 
   const activity = await getActivity(userInfo._id);
@@ -32,7 +32,7 @@ async function Page({ params }: { params: { id: string } }) {
       (friend: { id: any; }) => friend.id
     );
 
-
+console.log(userInfo.friends);
 
   return (
     <section>
@@ -92,11 +92,10 @@ async function Page({ params }: { params: { id: string } }) {
                         <Image
                           src={activityItem.author.image}
                           alt="user_logo"
-                          width={20}
-                          height={20}
+                          width={35}
+                          height={35}
                           className="rounded-full object-cover"
                         />
-                        <p className="ml-1 rounded-sm bg-light-4 px-2 py-1 !text-tiny-medium text-light-2"></p>
                         <p className="!text-small-regular text-light-1">
                           <span className="mr-1 text-[#D82CFB]">
                             {activityItem.author.name}
@@ -121,7 +120,7 @@ async function Page({ params }: { params: { id: string } }) {
                       image: string;
                     }) => (
                       <div className="mt-10">
-                        <UserCard
+                        <FriendCard
                           key={friend.id}
                           id={friend.id}
                           name={friend.name}

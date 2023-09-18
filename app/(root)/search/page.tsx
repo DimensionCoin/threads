@@ -6,6 +6,9 @@ import Searchbar from "@/components/shared/Searchbar";
 import Pagination from "@/components/shared/Pagination";
 
 import { fetchUser, fetchUsers } from "@/lib/actions/user.actions";
+import { fetchPosts } from "@/lib/actions/thread.actions";
+import ThreadCard from "@/components/cards/ThreadCard";
+
 
 async function Page({
   searchParams,
@@ -25,17 +28,22 @@ async function Page({
     pageSize: 25,
   });
 
+   const results = await fetchPosts(
+     searchParams.page ? +searchParams.page : 1,
+     30
+   );
+
   return (
     <section>
-      <h1 className='head-text mb-10'>Search</h1>
+      <Searchbar />
 
-      <Searchbar routeType='search' />
+      <h1 className="text-white mb-2 mt-6">Suggested Creators</h1>
 
-      <div className='mt-14 flex flex-col gap-9'>
+      <div className="mt-3 flex flex-col gap-9">
         {result.users.length === 0 ? (
-          <p className='no-result'>No Result</p>
+          <p className="no-result">No Result</p>
         ) : (
-          <>
+          <div className="space-y-2 bg-white/10 py-4 px-6 rounded-md">
             {result.users.map((person) => (
               <UserCard
                 key={person.id}
@@ -43,15 +51,39 @@ async function Page({
                 name={person.name}
                 username={person.username}
                 imgUrl={person.image}
-                personType='User'
+                personType="User"
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      <h1 className="head-text text-left mt-6">Explore</h1>
+
+      <section className="mt-3 flex flex-col gap-10">
+        {results.posts.length === 0 ? (
+          <p className="no-result">No threads found</p>
+        ) : (
+          <>
+            {results.posts.map((post) => (
+              <ThreadCard
+                key={post._id}
+                id={post._id}
+                currentUserId={user.id}
+                parentId={post.parentId}
+                content={post.text}
+                author={post.author}
+                community={post.community}
+                createdAt={post.createdAt}
+                comments={post.children}
               />
             ))}
           </>
         )}
-      </div>
+      </section>
 
       <Pagination
-        path='search'
+        path="search"
         pageNumber={searchParams?.page ? +searchParams.page : 1}
         isNext={result.isNext}
       />

@@ -19,7 +19,7 @@ function Bottombar() {
 
           const isCreatePost =
             link.route === "create-post" || link.label === "Create Post";
-          const iconSize = isCreatePost ? 42 : 18;
+          const iconSize = isCreatePost ? 44 : 16;
 
           return (
             <Link
@@ -27,13 +27,25 @@ function Bottombar() {
               key={link.label}
               className={`bottombar_link ${isActive && "bg-[#D82CFB]"}`}
             >
-              <Image
-                src={link.imgURL}
-                alt={link.label}
-                width={iconSize}
-                height={iconSize}
-                className="object-contain"
-              />
+              {isCreatePost ? (
+                <div className="create-post-wrapper">
+                  <Image
+                    src={link.imgURL}
+                    alt={link.label}
+                    width={iconSize}
+                    height={iconSize}
+                    className="object-contain mb-1"
+                  />
+                </div>
+              ) : (
+                <Image
+                  src={link.imgURL}
+                  alt={link.label}
+                  width={iconSize}
+                  height={iconSize}
+                  className="object-contain"
+                />
+              )}
 
               <p className="text-subtle-medium text-light-1 max-sm:hidden">
                 {link.label.split(/\s+/)[0]}
@@ -45,5 +57,4 @@ function Bottombar() {
     </section>
   );
 }
-
-export default Bottombar;
+export default Bottombar

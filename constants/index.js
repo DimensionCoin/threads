@@ -9,11 +9,7 @@ export const sidebarLinks = [
     route: "/search",
     label: "Search",
   },
-  {
-    imgURL: "/assets/heart.svg",
-    route: "/activity",
-    label: "Explore",
-  },
+ 
   {
     imgURL: "/assets/create.svg",
     route: "/create-post",
@@ -24,11 +20,7 @@ export const sidebarLinks = [
     route: "/communities",
     label: "Communities",
   },
-  {
-    imgURL: "/assets/user.svg",
-    route: "/profile",
-    label: "Profile",
-  },
+  
   {
     imgURL: "/assets/news.svg",
     route: "/articles",

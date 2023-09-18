@@ -1,17 +1,47 @@
-import { OrganizationSwitcher, SignedIn, SignOutButton } from "@clerk/nextjs";
+"use client";
+
+import {
+  OrganizationSwitcher,
+  SignedIn,
+  SignOutButton,
+  useUser,
+
+} from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import Image from "next/image";
 import Link from "next/link";
 
 function Topbar() {
+  const user = useUser();
+
+  const userId = user.isLoaded && user.user ? user.user.id : null;
+    const userProfileImage =
+      user.isLoaded && user.user ? user.user.imageUrl : null;
+
+
+  console.log(user)
   return (
     <nav className="topbar">
-      <Link href="/" className="flex items-center gap-4">
-        <Image src="/solana.svg" alt="logo" width={28} height={28} />
-        <p className="text-heading3-bold text-[#49ECAD] max-xs:hidden">
-          Sol Social
-        </p>
-      </Link>
+      {userId ? (
+        <Link href={`/profile/${userId}`} className="flex items-center gap-4 ">
+          {userProfileImage ? (
+            <Image
+              src={userProfileImage}
+              alt="User Profile"
+              width={28}
+              height={28}
+              className="rounded-full"
+            />
+          ) : (
+            <Image src="/solana.svg" alt="logo" width={28} height={28} />
+          )}
+          <p className="text-heading3-bold text-[#49ECAD] max-xs:hidden">
+            Sol Social
+          </p>
+        </Link>
+      ) : (
+        <div>Loading...</div>
+      )}
 
       <div className="flex items-center gap-1">
         <div className="block md:hidden">

@@ -3,14 +3,12 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 import { Input } from "../ui/input";
 
-interface Props {
-  routeType: string;
-}
-
-function Searchbar({ routeType }: Props) {
+function Searchbar() {
+  const pathname = usePathname();
   const router = useRouter();
   const [search, setSearch] = useState("");
 
@@ -18,32 +16,33 @@ function Searchbar({ routeType }: Props) {
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       if (search) {
-        router.push(`/${routeType}?q=` + search);
+        router.push(`${pathname}?q=` + search);
       } else {
-        router.push(`/${routeType}`);
+        router.push(pathname);
       }
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [search, routeType]);
+  }, [search, pathname, router]);
+
+  const placeholderText =
+    pathname === "/search" ? "Search Creators" : "Search Communities";
 
   return (
-    <div className='searchbar'>
+    <div className="searchbar">
       <Image
-        src='/assets/search-gray.svg'
-        alt='search'
+        src="/assets/search-gray.svg"
+        alt="search"
         width={24}
         height={24}
-        className='object-contain'
+        className="object-contain"
       />
       <Input
-        id='text'
+        id="text"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder={`${
-          routeType !== "/search" ? "Search communities" : "Search creators"
-        }`}
-        className='no-focus searchbar_input'
+        placeholder={placeholderText}
+        className="no-focus searchbar_input"
       />
     </div>
   );

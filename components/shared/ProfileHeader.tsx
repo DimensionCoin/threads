@@ -51,7 +51,7 @@ function ProfileHeader({
         <div className="space-y-5 flex flex-col items-start justify-end">
           {accountId === authUserId && type !== "Community" && (
             <Link href="/profile/edit">
-              <div className="flex cursor-pointer gap-3 rounded-lg bg-[#404040] px-4 py-2 justify-end ml-60 ">
+              <div className="flex cursor-pointer gap-3 rounded-lg bg-[#404040] px-4 py-2 justify-end ml-40 ">
                 <Image
                   src="/assets/edit.svg"
                   alt="logout"
@@ -64,7 +64,7 @@ function ProfileHeader({
               </div>
             </Link>
           )}
-          <div className="ml-60 md:w-auto">
+          <div className="ml-40 md:w-auto">
             {accountId === authUserId && type !== "Community" && (
               <OrganizationSwitcher
                 appearance={{

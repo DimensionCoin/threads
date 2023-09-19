@@ -1,9 +1,12 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import AddUserButton from "../buttons/AddUserButton";
 import UnfollowButton from "../buttons/UnfollowButton";
+import MessageButton from "../buttons/MessageButton";
 import { OrganizationSwitcher } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
+import React, { useState, useEffect } from "react";
 
 interface Props {
   accountId: string;
@@ -27,6 +30,21 @@ function ProfileHeader({
   friends,
 }: Props) {
   const isFriend = friends.includes(accountId);
+  const [isImageFullscreen, setImageFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleEscape = (event: { key: string; }) => {
+      if (event.key === "Escape") {
+        setImageFullscreen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
 
   return (
     <div className="flex w-full flex-col justify-start">
@@ -38,8 +56,24 @@ function ProfileHeader({
               alt="logo"
               fill
               className="rounded-full object-cover shadow-2xl"
+              onClick={() => setImageFullscreen(true)}
             />
+            <div className="absolute top-[-10px] right-[-10px]">
+              <MessageButton />
+            </div>
           </div>
+          {isImageFullscreen && (
+            <div
+              className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-75 flex items-center justify-center z-50 cursor-pointer"
+              onClick={() => setImageFullscreen(false)}
+            >
+              <img
+                src={imgUrl}
+                alt="Fullscreen view"
+                className="max-w-full max-h-full"
+              />
+            </div>
+          )}
 
           <div className="flex-1">
             <h2 className="text-left text-heading3-bold text-light-1">
@@ -51,14 +85,17 @@ function ProfileHeader({
         <div className="space-y-5 flex flex-col items-start justify-end">
           {accountId === authUserId && type !== "Community" && (
             <Link href="/profile/edit">
-              <div className="flex cursor-pointer gap-3 rounded-lg bg-[#404040] px-4 py-2 justify-end ml-40 ">
+              <div className="flex cursor-pointer gap-3 rounded-lg bg-[#404040] px-4 py-1 justify-end ml-40">
                 <Image
                   src="/assets/edit.svg"
                   alt="logout"
                   width={16}
                   height={16}
                 />
-                <p className="text-light-2 max-sm:hidden text-center flex justify-center">
+                <p className="text-light-2 text-center flex justify-center sm:hidden">
+                  Edit
+                </p>
+                <p className="text-light-2 text-center  justify-center hidden sm:inline">
                   Edit Account
                 </p>
               </div>
@@ -70,7 +107,7 @@ function ProfileHeader({
                 appearance={{
                   baseTheme: dark,
                   elements: {
-                    organizationSwitcherTrigger: "py-2 px-1",
+                    organizationSwitcherTrigger: "py-1 px-1",
                   },
                 }}
               />
@@ -88,7 +125,7 @@ function ProfileHeader({
       </div>
 
       {type !== "Community" && (
-        <p className="mt-6 max-w-lg text-base-regular text-light-2">{bio}</p>
+        <p className="mt-6 max-w-lg text-base-regular text-light-2 px-4">{bio}</p>
       )}
       <div className="mt-12 h-0.5 w-full bg-dark-3" />
     </div>

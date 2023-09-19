@@ -6,9 +6,8 @@ import Searchbar from "@/components/shared/Searchbar";
 import Pagination from "@/components/shared/Pagination";
 
 import { fetchUser, fetchUsers } from "@/lib/actions/user.actions";
-import { fetchPosts } from "@/lib/actions/thread.actions";
+import { fetchNonFriendPosts } from "@/lib/actions/thread.actions"; // Import the fetchNonFriendPosts function
 import ThreadCard from "@/components/cards/ThreadCard";
-
 
 async function Page({
   searchParams,
@@ -21,6 +20,8 @@ async function Page({
   const userInfo = await fetchUser(user.id);
   if (!userInfo?.onboarded) redirect("/onboarding");
 
+  const followedUsers = userInfo?.friends || [];
+
   const result = await fetchUsers({
     userId: user.id,
     searchString: searchParams.q,
@@ -28,10 +29,12 @@ async function Page({
     pageSize: 25,
   });
 
-   const results = await fetchPosts(
-     searchParams.page ? +searchParams.page : 1,
-     30
-   );
+  // Use fetchNonFriendPosts instead of fetchPosts and pass the list of followed users.
+  const results = await fetchNonFriendPosts(
+    followedUsers,
+    searchParams.page ? +searchParams.page : 1,
+    30
+  );
 
   return (
     <section>

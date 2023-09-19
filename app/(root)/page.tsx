@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import ThreadCard from "@/components/cards/ThreadCard";
 import Pagination from "@/components/shared/Pagination";
 
-import { fetchPosts } from "@/lib/actions/thread.actions";
+import { fetchFriendPosts } from "@/lib/actions/thread.actions"; // Import the fetchFriendPosts function
 import { fetchUser } from "@/lib/actions/user.actions";
 
 async function Home({
@@ -18,18 +18,24 @@ async function Home({
   const userInfo = await fetchUser(user.id);
   if (!userInfo?.onboarded) redirect("/onboarding");
 
-  const result = await fetchPosts(
+  // Assuming userInfo.following is an array of user IDs that the current user follows.
+  // If the structure is different, adjust accordingly.
+  const followedUsers = userInfo?.friends || [];
+
+  // Use fetchFriendPosts instead of fetchPosts and pass the list of followed users.
+  const result = await fetchFriendPosts(
+    followedUsers,
     searchParams.page ? +searchParams.page : 1,
     30
   );
 
   return (
     <>
-      <h1 className='head-text text-left'>Home</h1>
+      <h1 className="head-text text-left">Home</h1>
 
-      <section className='mt-9 flex flex-col gap-10'>
+      <section className="mt-9 flex flex-col gap-10">
         {result.posts.length === 0 ? (
-          <p className='no-result'>No threads found</p>
+          <p className="no-result">No threads found</p>
         ) : (
           <>
             {result.posts.map((post) => (
@@ -50,7 +56,7 @@ async function Home({
       </section>
 
       <Pagination
-        path='/'
+        path="/"
         pageNumber={searchParams?.page ? +searchParams.page : 1}
         isNext={result.isNext}
       />

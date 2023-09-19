@@ -59,7 +59,7 @@ function Topbar() {
           </SignedIn>
         </div>
 
-        <div className="bg-[#D82CFB] rounded-md mr-4 ml-2 p-1 px-2"> wallet button</div>
+        {/*<div className="bg-[#D82CFB] rounded-md mr-4 ml-2 p-1 px-2"> wallet button</div>*/}
       </div>
     </nav>
   );

@@ -24,7 +24,7 @@ export const sidebarLinks = [
   {
     imgURL: "/assets/news.svg",
     route: "/articles",
-    label: "Articles",
+    label: "Investor",
   },
 ];
 

@@ -35,7 +35,7 @@ const AddUserButton: React.FC<Props> = ({ accountId, authUserId }) => {
         height={30}
         className=""
       />
-      <p className="max-sm:hidden text-black">Add User</p>
+      <p className="max-sm:hidden text-black">Follow</p>
     </Button>
   );
 };

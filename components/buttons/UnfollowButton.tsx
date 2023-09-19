@@ -23,13 +23,19 @@ const UnfollowButton: React.FC<Props> = ({ accountId, authUserId }) => {
 
 
   return (
-    <Button
+    <button
       onClick={handleRemoveFriend}
-      className="flex cursor-pointer gap-3 bg-[#D82CFB] px-4 py-2 rounded-full hover:bg-[#d82cfbda]"
+      className="flex items-center gap-1 bg-[#D82CFB] px-4 py-2 rounded-full hover:bg-[#d82cfbda] min-w-[100px] text-center justify-center"
     >
-      <Image src="/assets/unfollow.svg" alt="add user" width={30} height={30} />
-      <p className="text-black max-sm:hidden">Unfollow</p>
-    </Button>
+      <Image
+        src="/assets/adduser.svg"
+        alt="add user"
+        width={20}
+        height={20}
+        className="max-sm:hidden"
+      />
+      <p className="text-black">Unfollow</p>
+    </button>
   );
 };
 

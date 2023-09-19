@@ -24,19 +24,19 @@ const AddUserButton: React.FC<Props> = ({ accountId, authUserId }) => {
     };
 
   return (
-    <Button
+    <button
       onClick={handleAddFriend}
-      className="flex cursor-pointer gap-3 bg-[#D82CFB] px-4 py-2 rounded-full hover:bg-[#d82cfbda]"
+      className="flex items-center gap-1 bg-[#D82CFB] px-4 py-2 rounded-full hover:bg-[#d82cfbda] min-w-[100px] text-center justify-center"
     >
       <Image
         src="/assets/adduser.svg"
         alt="add user"
-        width={30}
-        height={30}
-        className=""
+        width={20}
+        height={20}
+        className="max-sm:hidden"
       />
-      <p className="max-sm:hidden text-black">Follow</p>
-    </Button>
+      <p className="text-black">Follow</p>
+    </button>
   );
 };
 

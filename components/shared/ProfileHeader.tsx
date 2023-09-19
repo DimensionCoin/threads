@@ -125,7 +125,7 @@ function ProfileHeader({
       </div>
 
       {type !== "Community" && (
-        <p className="mt-6 max-w-lg text-base-regular text-light-2 px-4">{bio}</p>
+        <p className="mt-6 max-w-md text-base-regular text-light-2">{bio}</p>
       )}
       <div className="mt-12 h-0.5 w-full bg-dark-3" />
     </div>

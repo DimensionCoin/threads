@@ -2,6 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import AddUserButton from "../buttons/AddUserButton";
 import UnfollowButton from "../buttons/UnfollowButton";
+import { OrganizationSwitcher } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
 
 interface Props {
   accountId: string;
@@ -24,7 +26,6 @@ function ProfileHeader({
   type,
   friends,
 }: Props) {
-
   const isFriend = friends.includes(accountId);
 
   return (
@@ -47,20 +48,36 @@ function ProfileHeader({
             <p className="text-base-medium text-gray-1">@{username}</p>
           </div>
         </div>
-        {accountId === authUserId && type !== "Community" && (
-          <Link href="/profile/edit">
-            <div className="flex cursor-pointer gap-3 rounded-lg bg-[#404040] px-4 py-2">
-              <Image
-                src="/assets/edit.svg"
-                alt="logout"
-                width={16}
-                height={16}
+        <div className="space-y-5 flex flex-col items-start justify-end">
+          {accountId === authUserId && type !== "Community" && (
+            <Link href="/profile/edit">
+              <div className="flex cursor-pointer gap-3 rounded-lg bg-[#404040] px-4 py-2 justify-end ml-60 ">
+                <Image
+                  src="/assets/edit.svg"
+                  alt="logout"
+                  width={16}
+                  height={16}
+                />
+                <p className="text-light-2 max-sm:hidden text-center flex justify-center">
+                  Edit Account
+                </p>
+              </div>
+            </Link>
+          )}
+          <div className="ml-60 md:w-auto">
+            {accountId === authUserId && type !== "Community" && (
+              <OrganizationSwitcher
+                appearance={{
+                  baseTheme: dark,
+                  elements: {
+                    organizationSwitcherTrigger: "py-2 px-1",
+                  },
+                }}
               />
+            )}
+          </div>
+        </div>
 
-              <p className="text-light-2 max-sm:hidden">Edit</p>
-            </div>
-          </Link>
-        )}
         {accountId !== authUserId &&
           type !== "Community" &&
           (isFriend ? (

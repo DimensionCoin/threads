@@ -59,16 +59,7 @@ function Topbar() {
           </SignedIn>
         </div>
 
-        <div className="bg-[#D82CFB] rounded-md"></div>
-
-        <OrganizationSwitcher
-          appearance={{
-            baseTheme: dark,
-            elements: {
-              organizationSwitcherTrigger: "py-2 px-4",
-            },
-          }}
-        />
+        <div className="bg-[#D82CFB] rounded-md mr-4 ml-2 p-1 px-2"> wallet button</div>
       </div>
     </nav>
   );

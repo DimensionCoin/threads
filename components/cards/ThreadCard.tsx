@@ -1,10 +1,10 @@
 
+
 import Image from "next/image";
 import Link from "next/link";
 
 import { formatDateString } from "@/lib/utils";
 import DeleteThread from "../forms/DeleteThread";
-
 
 interface Props {
   id: string;
@@ -42,6 +42,7 @@ function ThreadCard({
   isComment,
 }: Props) {
 
+
   return (
     <article
       className={`flex w-full flex-col rounded-xl ${
@@ -78,13 +79,15 @@ function ThreadCard({
               className={`${isComment && "mb-5 mt-5"} mt-5 flex flex-col gap-3`}
             >
               <div className="flex gap-3.5">
-                <Image
-                  src="/assets/heart-gray.svg"
-                  alt="heart"
-                  width={24}
-                  height={24}
-                  className="cursor-pointer object-contain"
-                />
+                
+                  <Image
+                    src='/assets/heart-gray.svg'
+                    alt="heart"
+                    width={24}
+                    height={24}
+                    className="cursor-pointer object-contain"
+                  />
+                
                 <Link href={`/thread/${id}`}>
                   <Image
                     src="/assets/reply.svg"

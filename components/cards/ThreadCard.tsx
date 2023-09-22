@@ -1,10 +1,11 @@
-
-
 import Image from "next/image";
 import Link from "next/link";
 
 import { formatDateString } from "@/lib/utils";
 import DeleteThread from "../forms/DeleteThread";
+import LikeButton from "../buttons/LikeButton";
+import { Button } from "../ui/button";
+import ShareButton from "../buttons/ShareButton";
 
 interface Props {
   id: string;
@@ -42,6 +43,18 @@ function ThreadCard({
   isComment,
 }: Props) {
 
+function copyToClipboard(threadId: any) {
+  const threadURL = `${window.location.origin}/thread/${threadId}`;
+  navigator.clipboard
+    .writeText(threadURL)
+    .then(() => {
+      console.log("Thread URL copied to clipboard!");
+    })
+    .catch((err) => {
+      console.error("Could not copy thread URL: ", err);
+    });
+}
+
 
   return (
     <article
@@ -78,16 +91,9 @@ function ThreadCard({
             <div
               className={`${isComment && "mb-5 mt-5"} mt-5 flex flex-col gap-3`}
             >
-              <div className="flex gap-3.5">
-                
-                  <Image
-                    src='/assets/heart-gray.svg'
-                    alt="heart"
-                    width={24}
-                    height={24}
-                    className="cursor-pointer object-contain"
-                  />
-                
+              <div className="flex gap-4">
+                <LikeButton threadId={id} currentUserId={currentUserId} />
+
                 <Link href={`/thread/${id}`}>
                   <Image
                     src="/assets/reply.svg"
@@ -104,13 +110,7 @@ function ThreadCard({
                   height={24}
                   className="cursor-pointer object-contain"
                 />
-                <Image
-                  src="/assets/share.svg"
-                  alt="heart"
-                  width={24}
-                  height={24}
-                  className="cursor-pointer object-contain"
-                />
+                <ShareButton threadId={id}/>
               </div>
 
               {isComment && comments.length > 0 && (

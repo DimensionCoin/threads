@@ -10,7 +10,7 @@ import LeftSidebar from "@/components/shared/LeftSidebar";
 import Bottombar from "@/components/shared/Bottombar";
 import RightSidebar from "@/components/shared/RightSidebar";
 import Topbar from "@/components/shared/Topbar";
-import Head from "next/head";
+import { ToastContainer } from "react-toastify";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,9 +31,9 @@ export default function RootLayout({
       }}
     >
       <html lang="en">
-     
         <body className={inter.className}>
           <Topbar />
+          <ToastContainer />
 
           <main className="flex flex-row">
             <LeftSidebar />

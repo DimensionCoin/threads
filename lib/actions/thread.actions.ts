@@ -48,6 +48,52 @@ export async function fetchPosts(pageNumber = 1, pageSize = 20) {
   return { posts, isNext };
 }
 
+export async function fetchUserPosts(
+  id: string,
+  pageNumber = 1,
+  pageSize = 20
+) {
+  connectToDB();
+
+  const skipAmount = (pageNumber - 1) * pageSize;
+
+  const postsQuery = Thread.find({
+    author: id,
+    parentId: { $in: [null, undefined] }, // Fetch only top-level threads
+  })
+    .sort({ createdAt: "desc" })
+    .skip(skipAmount)
+    .limit(pageSize)
+    .populate({
+      path: "author",
+      model: User,
+      select: "_id name image", // Include the author's image
+    })
+    .populate({
+      path: "community",
+      model: Community,
+    })
+    .populate({
+      path: "children", // Populate the children field
+      populate: {
+        path: "author", // Populate the author field within children
+        model: User,
+        select: "_id name parentId image", // Select only _id and username fields of the author
+      },
+    });
+
+  const totalPostsCount = await Thread.countDocuments({
+    author: id,
+    parentId: { $in: [null, undefined] },
+  });
+
+  const posts = await postsQuery.exec();
+
+  const isNext = totalPostsCount > skipAmount + posts.length;
+
+  return { posts, isNext };
+}
+
 export async function fetchFriendPosts(
   friendsList: string[],
   pageNumber = 1,
@@ -61,25 +107,26 @@ export async function fetchFriendPosts(
     parentId: { $in: [null, undefined] },
     author: { $in: friendsList }, // Filter by friends' IDs
   })
-  .sort({ createdAt: "desc" })
-  .skip(skipAmount)
-  .limit(pageSize)
-  .populate({
-    path: "author",
-    model: User,
-  })
-  .populate({
-    path: "community",
-    model: Community,
-  })
-  .populate({
-    path: "children", // Populate the children field
-    populate: {
-      path: "author", // Populate the author field within children
+    .sort({ createdAt: "desc" })
+    .skip(skipAmount)
+    .limit(pageSize)
+    .populate({
+      path: "author",
       model: User,
-      select: "_id name parentId image", // Select only _id and username fields of the author
-    },
-  });
+      select: "_id name image", // Include the author's image
+    })
+    .populate({
+      path: "community",
+      model: Community,
+    })
+    .populate({
+      path: "children", // Populate the children field
+      populate: {
+        path: "author", // Populate the author field within children
+        model: User,
+        select: "_id name parentId image", // Select only _id and username fields of the author
+      },
+    });
 
   const totalPostsCount = await Thread.countDocuments({
     parentId: { $in: [null, undefined] },
@@ -106,25 +153,25 @@ export async function fetchNonFriendPosts(
     parentId: { $in: [null, undefined] },
     author: { $nin: friendsList }, // Exclude friends' IDs
   })
-  .sort({ createdAt: "desc" })
-  .skip(skipAmount)
-  .limit(pageSize)
-  .populate({
-    path: "author",
-    model: User,
-  })
-  .populate({
-    path: "community",
-    model: Community,
-  })
-  .populate({
-    path: "children", // Populate the children field
-    populate: {
-      path: "author", // Populate the author field within children
+    .sort({ createdAt: "desc" })
+    .skip(skipAmount)
+    .limit(pageSize)
+    .populate({
+      path: "author",
       model: User,
-      select: "_id name parentId image", // Select only _id and username fields of the author
-    },
-  });
+    })
+    .populate({
+      path: "community",
+      model: Community,
+    })
+    .populate({
+      path: "children", // Populate the children field
+      populate: {
+        path: "author", // Populate the author field within children
+        model: User,
+        select: "_id name parentId image", // Select only _id and username fields of the author
+      },
+    });
 
   const totalPostsCount = await Thread.countDocuments({
     parentId: { $in: [null, undefined] },
@@ -139,14 +186,18 @@ export async function fetchNonFriendPosts(
 }
 
 interface Params {
-  text: string,
-  author: string,
-  communityId: string | null,
-  path: string,
+  text: string;
+  author: string;
+  communityId: string | null;
+  path: string;
 }
 
-export async function createThread({ text, author, communityId, path }: Params
-) {
+export async function createThread({
+  text,
+  author,
+  communityId,
+  path,
+}: Params) {
   try {
     connectToDB();
 
@@ -179,12 +230,25 @@ export async function createThread({ text, author, communityId, path }: Params
   }
 }
 
-async function fetchAllChildThreads(threadId: string): Promise<any[]> {
+async function fetchAllChildThreads(
+  threadId: string,
+  visitedThreads: Set<string> = new Set()
+): Promise<any[]> {
+  if (visitedThreads.has(threadId)) {
+    console.error("Circular reference detected for thread ID:", threadId);
+    return [];
+  }
+
+  visitedThreads.add(threadId);
+
   const childThreads = await Thread.find({ parentId: threadId });
 
   const descendantThreads = [];
   for (const childThread of childThreads) {
-    const descendants = await fetchAllChildThreads(childThread._id);
+    const descendants = await fetchAllChildThreads(
+      childThread._id,
+      visitedThreads
+    );
     descendantThreads.push(childThread, ...descendants);
   }
 
@@ -197,11 +261,15 @@ export async function likeThread(threadId: string, userId: string) {
   const thread = await Thread.findById(threadId);
 
   if (!thread) {
+    console.error(`Thread with ID: ${threadId} not found`);
+
     throw new Error("Thread not found");
   }
 
   // Check if the user has already liked the thread
   if (thread.likedBy.includes(userId)) {
+    console.log(`User ${userId} has already liked the thread. Unliking...`);
+
     // Unlike the thread
     thread.likes -= 1;
     const index = thread.likedBy.indexOf(userId);
@@ -209,13 +277,63 @@ export async function likeThread(threadId: string, userId: string) {
       thread.likedBy.splice(index, 1);
     }
   } else {
+    console.log(`User ${userId} has not liked the thread. Liking...`);
+
     // Like the thread
     thread.likes += 1;
     thread.likedBy.push(userId);
   }
 
-  await thread.save();
-  return thread;
+  try {
+    await thread.save();
+    console.log(`Thread with ID: ${threadId} updated successfully`);
+
+    return thread;
+  } catch (err) {
+    console.error("Error while updating the thread:", err);
+    throw new Error("Database update failed. Please try again.");
+  }
+}
+
+export async function fetchLikesCount(threadId: string) {
+  connectToDB();
+
+  try {
+    const thread = await Thread.findById(threadId).select("likes").exec();
+
+    if (!thread) {
+      throw new Error("Thread not found");
+    }
+
+    return thread.likes;
+  } catch (err) {
+    console.error("Error while fetching likes count:", err);
+    throw new Error("Unable to fetch likes count");
+  }
+}
+
+export async function fetchLikers(threadId: string) {
+  connectToDB();
+
+  try {
+    const thread = await Thread.findById(threadId)
+      .select("likedBy")
+      .populate({
+        path: "likedBy",
+        model: User,
+        select: "_id name image",
+      })
+      .exec();
+
+    if (!thread) {
+      throw new Error("Thread not found");
+    }
+
+    return thread.likedBy;
+  } catch (err) {
+    console.error("Error while fetching likers:", err);
+    throw new Error("Unable to fetch likers");
+  }
 }
 
 export async function deleteThread(id: string, path: string): Promise<void> {
